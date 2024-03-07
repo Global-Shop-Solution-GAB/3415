@@ -1,0 +1,266 @@
+Program.Sub.ScreenSU.Start
+gui.F_Main..create
+gui.F_Main..caption("ADP Entry")
+gui.F_Main..size(1740,2790)
+gui.F_Main..position(0,0)
+gui.F_Main..event(unload,unload)
+gui.F_Main..alwaysontop(True)
+gui.F_Main..fontname("arial")
+gui.F_Main..fontsize(8)
+gui.F_Main..forecolor(0)
+gui.F_Main..fontstyle(False,False,False,False,False)
+gui.F_Main..BackColor(-2147483633)
+gui.F_Main..controlbox(True)
+gui.F_Main..maxbutton(False)
+gui.F_Main..minbutton(True)
+gui.F_Main..mousepointer(0)
+gui.F_Main..moveable(True)
+gui.F_Main..sizeable(False)
+gui.F_Main..ShowInTaskBar(True)
+gui.F_Main..titlebar(True)
+gui.F_Main.txt1.create(textbox)
+gui.F_Main.txt1.text("")
+gui.F_Main.txt1.visible(True)
+gui.F_Main.txt1.size(1215,315)
+gui.F_Main.txt1.zorder(0)
+gui.F_Main.txt1.position(200,400)
+gui.F_Main.txt1.enabled(True)
+gui.F_Main.txt1.fontname("arial")
+gui.F_Main.txt1.fontsize(8)
+gui.F_Main.txt1.maxLength(3)
+gui.F_Main.txt1.BackColor(-2147483643)
+gui.F_Main.lbl1.create(label)
+gui.F_Main.lbl1.caption("ADP Company")
+gui.F_Main.lbl1.backstyle(0)
+gui.F_Main.lbl1.visible(True)
+gui.F_Main.lbl1.size(1095,255)
+gui.F_Main.lbl1.zorder(1)
+gui.F_Main.lbl1.position(200,200)
+gui.F_Main.lbl1.enabled(True)
+gui.F_Main.lbl1.fontname("arial")
+gui.F_Main.lbl1.fontsize(8)
+gui.F_Main.lbl1.BackColor(-2147483633)
+gui.F_Main.txt2.create(textbox)
+gui.F_Main.txt2.text("")
+gui.F_Main.txt2.visible(True)
+gui.F_Main.txt2.size(1215,315)
+gui.F_Main.txt2.zorder(0)
+gui.F_Main.txt2.position(200,1200)
+gui.F_Main.txt2.enabled(True)
+gui.F_Main.txt2.fontname("arial")
+gui.F_Main.txt2.fontsize(8)
+gui.F_Main.txt2.maxLength(8)
+gui.F_Main.txt2.BackColor(-2147483643)
+gui.F_Main.lbl2.create(label)
+gui.F_Main.lbl2.caption("Batch Number")
+gui.F_Main.lbl2.backstyle(0)
+gui.F_Main.lbl2.visible(True)
+gui.F_Main.lbl2.size(1095,255)
+gui.F_Main.lbl2.zorder(1)
+gui.F_Main.lbl2.position(200,1000)
+gui.F_Main.lbl2.enabled(True)
+gui.F_Main.lbl2.fontname("arial")
+gui.F_Main.lbl2.fontsize(8)
+gui.F_Main.lbl2.BackColor(-2147483633)
+gui.F_Main.cmdExport.create(button)
+gui.F_Main.cmdExport.caption("Export")
+gui.F_Main.cmdExport.visible(True)
+gui.F_Main.cmdExport.size(975,375)
+gui.F_Main.cmdExport.zorder(0)
+gui.F_Main.cmdExport.position(300,1700)
+gui.F_Main.cmdExport.enabled(True)
+gui.F_Main.cmdExport.fontname("arial")
+gui.F_Main.cmdExport.fontsize(8)
+gui.F_Main.cmdExport.event(click,Process)
+
+
+Program.Sub.ScreenSU.End
+
+Program.Sub.Preflight.Start
+
+Variable.Global.DSN.Declare(String)
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+Gui.F_main..Show
+
+Program.Sub.Main.End
+
+Program.Sub.Process.Start
+
+Gui.F_Main.cmdExport.Enabled(false)
+
+Variable.local.export.declare(String)
+Variable.local.export.redim(0,6)
+Variable.local.hold.declare(String)
+Variable.local.query.declare(String)
+Variable.Local.I.declare(Long)
+Variable.local.DIR.declare(String)
+Variable.local.date.declare(String)
+Variable.local.lHndl.declare(Long)
+Variable.local.filename.declare(String)
+Variable.local.sResult.declare(String)
+Variable.Local.time.Declare(String)
+Variable.Local.id.Declare(String)
+V.Local.shold.Declare(String)
+V.Local.sEmp.Declare(String)
+
+V.Local.sEmployee.Declare(String)
+V.Local.sname.Declare(String)
+V.Local.sLine.Declare(String)
+V.Local.sType.Declare(String)
+V.Local.sReg.Declare(String)
+V.Local.sOT.Declare(String)
+V.Local.sHCde.Declare(String)
+V.Local.sCode.Declare(String)
+V.Local.sHAmt.Declare(String)
+V.Local.sOutput.Declare(String)
+V.Local.Hhead.Declare(String)
+
+V.Local.lCount.Declare(Long)
+V.Local.lRowCnt.Declare(Long)
+V.Local.lCdeCount.Declare(Long)
+
+V.Local.shold.Set(V.Screen.F_Main!txt1.Text)
+F.Intrinsic.Control.If(V.Local.shold.trim,=,"")
+	F.Intrinsic.UI.Msgbox("Must enter an ADP Company Code")
+Gui.F_Main.cmdExport.Enabled(True)
+	F.Intrinsic.Control.ExitSub
+F.Intrinsic.Control.endif
+
+V.Local.shold.Set(V.Screen.F_Main!txt2.text)
+F.Intrinsic.Control.If(V.Local.shold.trim,=,"")
+	F.Intrinsic.UI.Msgbox("Must enter a Batch Number")
+Gui.F_Main.cmdExport.Enabled(True)
+	F.Intrinsic.Control.ExitSub
+F.Intrinsic.Control.endif
+
+Function.Odbc.Connection!Conx.Openconnection(Variable.Ambient.pDSN,Variable.Ambient.PUser,Variable.Ambient.PPass)
+
+Function.Intrinsic.String.Left(Variable.Passed.888888,8,Variable.Local.date)
+Function.Intrinsic.String.Mid(Variable.Passed.888888,9,6,Variable.Local.time)
+Function.Intrinsic.String.Mid(Variable.Passed.888888,15,2,Variable.Local.id)
+Function.Intrinsic.string.Left(Variable.Screen.F_Main!txt1.Text,3,Variable.Local.hold)
+Function.Intrinsic.Control.If(Variable.Local.hold.Length,<,3)
+	Function.intrinsic.string.concat(Variable.Local.hold,"_",Variable.Local.hold)
+Function.Intrinsic.Control.EndIf
+
+Function.Intrinsic.String.Concat(Variable.Caller.FilesDir,"\EPI",Variable.Local.hold,Variable.Local.id,".csv",Variable.Local.Filename)
+
+
+'Function.Intrinsic.File.Writeline(Variable.Local.lHndl,"Co Code,Batch ID,File #, Reg Hours, O/T Hours,Hours 3 Code, Hours 3 Amount")
+
+F.Intrinsic.String.Concat("select distinct PYRL_LABOR_XFER.EMPLOYEE,PYRL_LABOR_XFER.NAME from PYRL_LABOR_XFER  inner join EMPLOYEE_MSTR on PYRL_LABOR_XFER.EMPLOYEE=EMPLOYEE_MSTR.EMPLOYEE where RUN_CYMD = '",Variable.Local.date,"' AND RUN_TIME = '",Variable.Local.time,"'",Variable.Local.sEmp)
+F.ODBC.Connection!Conx.OpenRecordsetRO("rstEmp",V.Local.sEmp)
+	F.Intrinsic.Control.DoUntil(V.ODBC.Conx!rstEmp.EOF,=,True)
+
+		V.Local.sEmployee.set(Variable.Odbc.Conx!RstEmp.Fieldval!EMPLOYEE)
+		V.Local.sname.Set(V.ODBC.Conx!rstEmp.FieldValtrim!NAME)
+		F.Intrinsic.String.Replace(V.Local.sname,","," ",V.Local.sname)
+		V.Local.sLine.Set("")
+		V.Local.lCount.Set(0)
+		V.Local.sCode.Set("")
+		V.Local.sReg.Set("")
+		V.Local.sOT.Set("")
+		V.Local.sHCde.Set("")
+		V.Local.sReg.Set("")
+		V.Local.sOT.set("")
+
+		Function.intrinsic.string.concat("select  PYRL_LABOR_XFER.TYPE, PYRL_LABOR_XFER.HOURS,PYRL_LABOR_XFER.EC,EMPLOYEE_MSTR.PAY_TYPE from PYRL_LABOR_XFER  inner join EMPLOYEE_MSTR on PYRL_LABOR_XFER.EMPLOYEE=EMPLOYEE_MSTR.EMPLOYEE  where PYRL_LABOR_XFER.EMPLOYEE='",V.ODBC.Conx!rstEmp.FieldValtrim!EMPLOYEE,"'and RUN_CYMD = '",Variable.Local.date,"'and RUN_TIME='",Variable.Local.time,"' order by TYPE desc",Variable.Local.query)
+		Function.Odbc.Connection!Conx.Openrecordsetro("rstX",Variable.Local.query)
+			F.Intrinsic.Control.If(V.ODBC.Conx!rstX.EOF,=,False)
+				V.Local.lRowCnt.Set(0)
+				Variable.local.export.redim(0,1)
+
+				Function.Intrinsic.string.Left(Variable.Screen.F_Main!txt1.Text,3,Variable.Local.hold)
+				Gui.F_Main.txt1.Text(Variable.Local.hold)
+				Variable.local.export(0).set(Variable.Local.hold)
+
+				Function.Intrinsic.string.Left(Variable.Screen.F_Main!txt2.Text,8,Variable.Local.hold)
+				Gui.F_Main.txt2.Text(Variable.Local.hold)
+				Variable.local.export(1).set(Variable.Local.hold)
+			F.Intrinsic.Control.EndIf
+
+			F.Intrinsic.Control.DoUntil(V.ODBC.Conx!rstX.EOF,=,True)
+				V.Local.sType.Set(V.ODBC.Conx!rstX.FieldValtrim!TYPE)
+				F.Intrinsic.Control.If(V.ODBC.Conx!rstX.FieldVal!PAY_TYPE,<>,"S")
+					Function.Intrinsic.Control.If(V.Local.sType,=,"RT")
+						V.Local.sReg.set(Variable.Odbc.Conx!Rstx.Fieldval!Hours)
+					Function.Intrinsic.Control.EndIf
+
+					Function.Intrinsic.Control.If(V.Local.sType,=,"OT")
+						V.Local.sOT.set(Variable.Odbc.Conx!Rstx.Fieldval!HOURS)
+					Function.Intrinsic.Control.EndIf
+
+					F.Intrinsic.Control.if(V.Local.sType,=,"HT")
+						V.Local.sType.Set("EC")
+					F.Intrinsic.Control.EndIf
+				F.Intrinsic.Control.endif
+
+				Function.Intrinsic.Control.If(V.Local.sType,=,"EC")
+					F.Intrinsic.Math.Add(V.Local.lCount,1,V.Local.lCount)
+					F.Intrinsic.Control.If(V.ODBC.Conx!rstX.FieldValtrim!EC,=,"02")
+						V.Local.sHCde.Set("S")
+					F.Intrinsic.Control.ElseIf(V.ODBC.Conx!rstX.FieldValtrim!EC,=,"03")
+						V.Local.sHCde.Set("V")
+					F.Intrinsic.Control.ElseIf(V.ODBC.Conx!rstX.FieldValtrim!EC,=,"04")
+						V.Local.sHCde.Set("P")
+					F.Intrinsic.Control.elseif(V.ODBC.Conx!rstX.FieldValtrim!EC,=,"05")
+						V.Local.sHCde.Set("H")
+					F.Intrinsic.Control.Elseif(V.ODBC.Conx!rstX.FieldValtrim!EC,=,"10")
+						V.Local.sHCde.Set("10")
+					F.Intrinsic.Control.EndIf
+					F.Intrinsic.String.Concat(V.Local.sCode,",",V.Local.sHCde,",",V.ODBC.Conx!rstX.FieldVal!HOURS,V.Local.sCode)
+				F.Intrinsic.Control.EndIf
+
+				F.Intrinsic.Control.If(V.Local.lCount,>,V.Local.lCdeCount)
+					V.Local.lCdeCount.Set(V.Local.lCount)
+				F.Intrinsic.Control.EndIf
+
+			Function.Odbc.Conx!Rstx.movenext
+			Function.intrinsic.control.loop
+		Function.Odbc.Conx!Rstx.Close
+
+		F.Intrinsic.String.Concat(V.Local.export(0),",",V.Local.export(1),",",V.Local.sEmployee,",",V.Local.sname,",",V.Local.sReg,",",V.Local.sOT,V.Local.sCode,V.Local.sLine)
+		F.Intrinsic.String.Concat(V.Local.sOutput,V.Ambient.NewLine,V.Local.sLine,V.Local.sOutput)
+
+	F.ODBC.Conx!rstEmp.MoveNext
+	F.Intrinsic.Control.Loop
+F.ODBC.Conx!rstEmp.Close
+
+F.Intrinsic.Control.If(V.Local.lCdeCount,=,0)
+	V.Local.Hhead.Set("Co Code,Batch ID,File #,Name,Reg Hours,O/T Hours")
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.For(V.Local.lRowCnt,1,V.Local.lCdeCount,1)
+	F.Intrinsic.Control.If(V.Local.lRowCnt,=,1)
+		V.Local.Hhead.Set("Co Code,Batch ID,File #,Name,Reg Hours,O/T Hours,Hours 3 Code,Hours 3 Amount")
+	F.Intrinsic.Control.Else
+		F.Intrinsic.String.Concat(V.Local.Hhead,",Hours 3 Code,Hours 3 Amount",V.Local.Hhead)
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.Next(V.Local.lRowCnt)
+
+F.Intrinsic.String.Concat(V.Local.Hhead,V.Local.sOutput,V.Local.sOutput)
+F.Intrinsic.File.String2File(V.Local.filename,V.Local.sOutput)
+
+
+Function.Odbc.Connection!Conx.Close
+Function.Intrinsic.Control.End
+
+
+
+Program.Sub.Process.End
+
+Program.Sub.unload.Start
+Function.Intrinsic.Control.End
+
+Program.Sub.unload.End
+
+Program.Sub.Comments.Start
+${$0$}$MDT_ADP_Payroll_export$}$JCT$}$8/28/2009
+${$1$}$$}$$}$0$}$15290$}$PR0999-CREATE-FILE-HOOK$}$12/30/2013 10:29:55 AM$}$(Program: PR0999; Screen: PR0999)
+SF>Transaction>Transfer Labor to Payroll
+${$3$}$0$}$$}$-1$}$-1$}$$}$1/1/1900$}$for Maryland Thermoform, per quote 712
+${$4$}$0$}$$}$0$}$-1$}$JCT$}$12/30/2013 10:31:02 AM$}$holiday hours not coming through, if the 05 code is flagged as "Holiday" in the payroll options.  made a change to check to see if Type ="HT", to capture the holiday hours
+Program.Sub.Comments.End
+
